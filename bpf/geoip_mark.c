@@ -12,14 +12,14 @@ struct lpm_key_v4 {
     __u32 addr;
 };
 
-// Map: 非CN网段前缀
+// Map: CN网段前缀
 struct {
     __uint(type, BPF_MAP_TYPE_LPM_TRIE);
     __uint(max_entries, 200000);
     __type(key, struct lpm_key_v4);
     __type(value, __u8);
     __uint(map_flags, BPF_F_NO_PREALLOC);
-} non_cn_prefixes SEC(".maps");
+} cn_prefixes SEC(".maps");
 
 // Map: fwmark配置
 struct {
@@ -46,11 +46,11 @@ int geoip_mark(struct __sk_buff *skb) {
         return TC_ACT_OK;
 
     struct lpm_key_v4 key = {};
-    key.prefixlen = 32;
+    key.prefixlen = 32; // LPM trie会匹配最长前缀
     key.addr = iph->daddr;
 
-    __u8 *val = bpf_map_lookup_elem(&non_cn_prefixes, &key);
-    if (val) {
+    __u8 *val = bpf_map_lookup_elem(&cn_prefixes, &key);
+    if (!val) {
         __u32 idx = 0;
         __u32 *mark = bpf_map_lookup_elem(&fwmark_conf, &idx);
         if (mark) {

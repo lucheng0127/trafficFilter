@@ -68,8 +68,8 @@ type BpfProgProgramSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type BpfProgMapSpecs struct {
-	FwmarkConf    *ebpf.MapSpec `ebpf:"fwmark_conf"`
-	NonCnPrefixes *ebpf.MapSpec `ebpf:"non_cn_prefixes"`
+	CnPrefixes *ebpf.MapSpec `ebpf:"cn_prefixes"`
+	FwmarkConf *ebpf.MapSpec `ebpf:"fwmark_conf"`
 }
 
 // BpfProgVariableSpecs contains global variables before they are loaded into the kernel.
@@ -98,14 +98,14 @@ func (o *BpfProgObjects) Close() error {
 //
 // It can be passed to LoadBpfProgObjects or ebpf.CollectionSpec.LoadAndAssign.
 type BpfProgMaps struct {
-	FwmarkConf    *ebpf.Map `ebpf:"fwmark_conf"`
-	NonCnPrefixes *ebpf.Map `ebpf:"non_cn_prefixes"`
+	CnPrefixes *ebpf.Map `ebpf:"cn_prefixes"`
+	FwmarkConf *ebpf.Map `ebpf:"fwmark_conf"`
 }
 
 func (m *BpfProgMaps) Close() error {
 	return _BpfProgClose(
+		m.CnPrefixes,
 		m.FwmarkConf,
-		m.NonCnPrefixes,
 	)
 }
 

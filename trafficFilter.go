@@ -65,7 +65,7 @@ func main() {
 			continue
 		}
 
-		if record.Country.IsoCode == "CN" {
+		if record.Country.IsoCode != "CN" {
 			continue
 		}
 
@@ -74,12 +74,12 @@ func main() {
 			ip := binary.BigEndian.Uint32(subnet.IP.To4())
 			key := lpmKeyV4{PrefixLen: uint32(ones), Addr: ip}
 			val := uint8(1)
-			if err := objs.NonCnPrefixes.Update(&key, &val, ebpf.UpdateAny); err == nil {
+			if err := objs.CnPrefixes.Update(&key, &val, ebpf.UpdateAny); err == nil {
 				count++
 			}
 		}
 	}
-	fmt.Printf("[+] loaded %d non-CN prefixes into map\n", count)
+	fmt.Printf("[+] loaded %d CN prefixes into map\n", count)
 
 	// 4. 挂载到指定网卡 ingress
 	ifaceIdx := ifaceIndex(iface)
