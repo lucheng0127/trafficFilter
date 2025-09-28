@@ -54,7 +54,7 @@ int geoip_mark(struct __sk_buff *skb) {
         __u32 idx = 0;
         __u32 *mark = bpf_map_lookup_elem(&fwmark_conf, &idx);
         if (mark) {
-            bpf_skb_set_mark(skb, *mark);
+            skb->mark = *mark;
         }
     }
 
